@@ -1,6 +1,6 @@
 {
   "name": "sugar-object",
-  "description": "A Javascript utility library for working with native objects. Object module.",
+  "description": "Object module for the Sugar Javascript utility library.",
   "homepage": "https://sugarjs.com/",
   "license": "MIT",
   "authors": [

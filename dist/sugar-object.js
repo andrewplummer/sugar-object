@@ -1,5 +1,5 @@
 /*
- *  Sugar v2.0.0
+ *  Sugar v2.0.2
  *
  *  Freely distributable and licensed under the MIT-style license.
  *  Copyright (c) Andrew Plummer
@@ -94,9 +94,9 @@
   }
 
   /***
-   * @method createNamespace(<name>)
-   * @returns Namespace
-   * @global
+   * @method createNamespace(name)
+   * @returns SugarNamespace
+   * @namespace Sugar
    * @short Creates a new Sugar namespace.
    * @extra This method is for plugin developers who want to define methods to be
    *        used with natives that Sugar does not handle by default. The new
@@ -109,6 +109,8 @@
    *
    *   Sugar.createNamespace('Boolean');
    *
+   * @param {string} name - The namespace name.
+   *
    ***/
   function createNamespace(name) {
 
@@ -119,14 +121,13 @@
     var sugarNamespace = getNewChainableClass(name, true);
 
     /***
-     * @method extend([options])
+     * @method extend([opts])
      * @returns Sugar
-     * @global
-     * @namespace
+     * @namespace Sugar
      * @short Extends Sugar defined methods onto natives.
      * @extra This method can be called on individual namespaces like
      *        `Sugar.Array` or on the `Sugar` global itself, in which case
-     *        [options] will be forwarded to each `extend` call. For more,
+     *        [opts] will be forwarded to each `extend` call. For more,
      *        see `extending`.
      *
      * @options
@@ -158,6 +159,22 @@
      *
      *   Sugar.Array.extend();
      *   Sugar.extend();
+     *
+     * @option {Array<string>} [methods]
+     * @option {Array<string|NativeConstructor>} [except]
+     * @option {Array<NativeConstructor>} [namespaces]
+     * @option {boolean} [enhance]
+     * @option {boolean} [enhanceString]
+     * @option {boolean} [enhanceArray]
+     * @option {boolean} [objectPrototype]
+     * @param {ExtendOptions} [opts]
+     *
+     ***
+     * @method extend([opts])
+     * @returns SugarNamespace
+     * @namespace SugarNamespace
+     * @short Extends Sugar defined methods for a specific namespace onto natives.
+     * @param {ExtendOptions} [opts]
      *
      ***/
     var extend = function (opts) {
@@ -255,7 +272,7 @@
         // methods, so add a flag here to check later.
         setProperty(sugarNamespace, 'active', true);
       }
-      return Sugar;
+      return sugarNamespace;
     };
 
     function defineWithOptionCollect(methodName, instance, args) {
@@ -267,9 +284,9 @@
     }
 
     /***
-     * @method defineStatic(...)
-     * @returns Namespace
-     * @namespace
+     * @method defineStatic(methods)
+     * @returns SugarNamespace
+     * @namespace SugarNamespace
      * @short Defines static methods on the namespace that can later be extended
      *        onto the native globals.
      * @extra Accepts either a single object mapping names to functions, or name
@@ -285,13 +302,17 @@
      *     }
      *   });
      *
+     * @signature defineStatic(methodName, methodFn)
+     * @param {Object} methods - Methods to be defined.
+     * @param {string} methodName - Name of a single method to be defined.
+     * @param {Function} methodFn - Function body of a single method to be defined.
      ***/
     defineWithOptionCollect('defineStatic', STATIC);
 
     /***
-     * @method defineInstance(...)
-     * @returns Namespace
-     * @namespace
+     * @method defineInstance(methods)
+     * @returns SugarNamespace
+     * @namespace SugarNamespace
      * @short Defines methods on the namespace that can later be extended as
      *        instance methods onto the native prototype.
      * @extra Accepts either a single object mapping names to functions, or name
@@ -315,13 +336,17 @@
      *     }
      *   });
      *
+     * @signature defineInstance(methodName, methodFn)
+     * @param {Object} methods - Methods to be defined.
+     * @param {string} methodName - Name of a single method to be defined.
+     * @param {Function} methodFn - Function body of a single method to be defined.
      ***/
     defineWithOptionCollect('defineInstance', INSTANCE);
 
     /***
-     * @method defineInstanceAndStatic(...)
-     * @returns Namespace
-     * @namespace
+     * @method defineInstanceAndStatic(methods)
+     * @returns SugarNamespace
+     * @namespace SugarNamespace
      * @short A shortcut to define both static and instance methods on the namespace.
      * @extra This method is intended for use with `Object` instance methods. Sugar
      *        will not map any methods to `Object.prototype` by default, so defining
@@ -335,14 +360,18 @@
      *     }
      *   });
      *
+     * @signature defineInstanceAndStatic(methodName, methodFn)
+     * @param {Object} methods - Methods to be defined.
+     * @param {string} methodName - Name of a single method to be defined.
+     * @param {Function} methodFn - Function body of a single method to be defined.
      ***/
     defineWithOptionCollect('defineInstanceAndStatic', INSTANCE | STATIC);
 
 
     /***
-     * @method defineStaticWithArguments(...)
-     * @returns Namespace
-     * @namespace
+     * @method defineStaticWithArguments(methods)
+     * @returns SugarNamespace
+     * @namespace SugarNamespace
      * @short Defines static methods that collect arguments.
      * @extra This method is identical to `defineStatic`, except that when defined
      *        methods are called, they will collect any arguments past `n - 1`,
@@ -361,13 +390,17 @@
      *     }
      *   });
      *
+     * @signature defineStaticWithArguments(methodName, methodFn)
+     * @param {Object} methods - Methods to be defined.
+     * @param {string} methodName - Name of a single method to be defined.
+     * @param {Function} methodFn - Function body of a single method to be defined.
      ***/
     defineWithOptionCollect('defineStaticWithArguments', STATIC, true);
 
     /***
-     * @method defineInstanceWithArguments(...)
-     * @returns Namespace
-     * @namespace
+     * @method defineInstanceWithArguments(methods)
+     * @returns SugarNamespace
+     * @namespace SugarNamespace
      * @short Defines instance methods that collect arguments.
      * @extra This method is identical to `defineInstance`, except that when
      *        defined methods are called, they will collect any arguments past
@@ -386,13 +419,17 @@
      *     }
      *   });
      *
+     * @signature defineInstanceWithArguments(methodName, methodFn)
+     * @param {Object} methods - Methods to be defined.
+     * @param {string} methodName - Name of a single method to be defined.
+     * @param {Function} methodFn - Function body of a single method to be defined.
      ***/
     defineWithOptionCollect('defineInstanceWithArguments', INSTANCE, true);
 
     /***
-     * @method defineStaticPolyfill(...)
-     * @returns Namespace
-     * @namespace
+     * @method defineStaticPolyfill(methods)
+     * @returns SugarNamespace
+     * @namespace SugarNamespace
      * @short Defines static methods that are mapped onto the native if they do
      *        not already exist.
      * @extra Intended only for use creating polyfills that follow the ECMAScript
@@ -407,16 +444,21 @@
      *     }
      *   });
      *
+     * @signature defineStaticPolyfill(methodName, methodFn)
+     * @param {Object} methods - Methods to be defined.
+     * @param {string} methodName - Name of a single method to be defined.
+     * @param {Function} methodFn - Function body of a single method to be defined.
      ***/
     setProperty(sugarNamespace, 'defineStaticPolyfill', function(arg1, arg2, arg3) {
       var opts = collectDefineOptions(arg1, arg2, arg3);
       extendNative(globalContext[name], opts.methods, true, opts.last);
+      return sugarNamespace;
     });
 
     /***
-     * @method defineInstancePolyfill(...)
-     * @returns Namespace
-     * @namespace
+     * @method defineInstancePolyfill(methods)
+     * @returns SugarNamespace
+     * @namespace SugarNamespace
      * @short Defines instance methods that are mapped onto the native prototype
      *        if they do not already exist.
      * @extra Intended only for use creating polyfills that follow the ECMAScript
@@ -434,6 +476,10 @@
      *     }
      *   });
      *
+     * @signature defineInstancePolyfill(methodName, methodFn)
+     * @param {Object} methods - Methods to be defined.
+     * @param {string} methodName - Name of a single method to be defined.
+     * @param {Function} methodFn - Function body of a single method to be defined.
      ***/
     setProperty(sugarNamespace, 'defineInstancePolyfill', function(arg1, arg2, arg3) {
       var opts = collectDefineOptions(arg1, arg2, arg3);
@@ -442,22 +488,27 @@
       forEachProperty(opts.methods, function(fn, methodName) {
         defineChainableMethod(sugarNamespace, methodName, fn);
       });
+      return sugarNamespace;
     });
 
     /***
-     * @method alias(<toName>, <fromName>)
-     * @returns Namespace
-     * @namespace
+     * @method alias(toName, from)
+     * @returns SugarNamespace
+     * @namespace SugarNamespace
      * @short Aliases one Sugar method to another.
      *
      * @example
      *
      *   Sugar.Array.alias('all', 'every');
      *
+     * @signature alias(toName, fn)
+     * @param {string} toName - Name for new method.
+     * @param {string|Function} from - Method to alias, or string shortcut.
      ***/
     setProperty(sugarNamespace, 'alias', function(name, source) {
       var method = typeof source === 'string' ? sugarNamespace[source] : source;
       setMethod(sugarNamespace, name, method);
+      return sugarNamespace;
     });
 
     // Each namespace can extend only itself through its .extend method.
@@ -1052,11 +1103,20 @@
       return obj[name];
     }
 
-    function setOption(name, val) {
-      if (val === null) {
-        val = defaults[name];
+    function setOption(arg1, arg2) {
+      var options;
+      if (arguments.length === 1) {
+        options = arg1;
+      } else {
+        options = {};
+        options[arg1] = arg2;
       }
-      obj[name] = val;
+      forEachProperty(options, function(val, name) {
+        if (val === null) {
+          val = defaults[name];
+        }
+        obj[name] = val;
+      });
     }
 
     defineAccessor(namespace, 'getOption', getOption);
@@ -2486,9 +2546,9 @@
   }
 
   /***
-   * @method is[Type](<obj>)
+   * @method is[Type]()
    * @returns Boolean
-   * @short Returns true if <obj> is an object of that type.
+   * @short Returns true if the object is an object of that type.
    *
    * @set
    *   isArray
@@ -2519,7 +2579,7 @@
   defineStatic(sugarObject, {
 
     /***
-     * @method fromQueryString(<str>, [options])
+     * @method fromQueryString(str, [options])
      * @returns Object
      * @static
      * @short Converts the query string of a URL into an object.
@@ -2542,7 +2602,7 @@
      *   separator   If passed, keys will be split on this string to extract
      *               deep values. (Default `''`)
      *
-     * @callback transform
+     * @callback queryStringTransformFn
      *
      *   key   The key component of the query string (before `=`).
      *   val   The value component of the query string (after `=`).
@@ -2555,6 +2615,17 @@
      *   Object.fromQueryString('a_b=c',{separator:'_'})   -> {a:{b:'c'}}
      *   Object.fromQueryString('id=123', {transform:idToNumber});
      *
+     * @param {string} str
+     * @param {QueryStringParseOptions} options
+     * @callbackParam {string} key
+     * @callbackParam {Property} val
+     * @callbackParam {Object} obj
+     * @callbackReturns {NewProperty} queryStringTransformFn
+     * @option {boolean} [deep]
+     * @option {boolean} [auto]
+     * @option {string} [separator]
+     * @option {queryStringTransformFn} [transform]
+     *
      ***/
     'fromQueryString': function(obj, options) {
       return fromQueryStringWithOptions(obj, options);
@@ -2565,9 +2636,9 @@
   defineInstanceAndStatic(sugarObject, {
 
     /***
-     * @method has(<obj>, <key>, [inherited] = false)
+     * @method has(key, [inherited] = false)
      * @returns Boolean
-     * @short Checks if <obj> has property <key>.
+     * @short Checks if the object has property `key`.
      * @extra Supports `deep properties`. If [inherited] is `true`,
      *        properties defined in the prototype chain will also return `true`.
      *        The default of `false` for this argument makes this method suited
@@ -2580,15 +2651,18 @@
      *   Object.has([], 'forEach')            -> false
      *   Object.has([], 'forEach', true)      -> true
      *
+     * @param {string} key
+     * @param {boolean} [inherited]
+     *
      ***/
     'has': function(obj, key, any) {
       return deepHasProperty(obj, key, any);
     },
 
     /***
-     * @method get(<obj>, <key>, [inherited] = false)
+     * @method get(key, [inherited] = false)
      * @returns Mixed
-     * @short Gets a property of <obj>.
+     * @short Gets a property of the object.
      * @extra Supports `deep properties`. If [inherited] is `true`,
      *        properties defined in the prototype chain will also be returned.
      *        The default of `false` for this argument makes this method suited
@@ -2603,21 +2677,24 @@
      *   Object.get(data, 'users[1..2].name') -> Names of users 1 and 2
      *   Object.get(data, 'users[-2..-1]')    -> Last 2 users
      *
+     * @param {string} key
+     * @param {boolean} [inherited]
+     *
      ***/
     'get': function(obj, key, any) {
       return deepGetProperty(obj, key, any);
     },
 
     /***
-     * @method set(<obj>, <key>, <val>)
+     * @method set(key, val)
      * @returns Object
-     * @short Sets a property on <obj>.
-     * @extra Using a dot or square bracket in <key> is considered "deep" syntax,
-     *        and will attempt to traverse into <obj> to set the property,
+     * @short Sets a property on the object.
+     * @extra Using a dot or square bracket in `key` is considered "deep" syntax,
+     *        and will attempt to traverse into the object to set the property,
      *        creating properties that do not exist along the way. If the missing
      *        property is referenced using square brackets, an empty array will be
      *        created, otherwise an empty object. A special `[]` carries the
-     *        meaning of "the last index + 1", and will effectively push <val>
+     *        meaning of "the last index + 1", and will effectively push `val`
      *        onto the end of the array. Lastly, a `..` separator inside the
      *        brackets is "range" notation, and will set properties on all
      *        elements in the specified range. Range members may be negative,
@@ -2631,15 +2708,18 @@
      *   Object.set({}, 'users[1].name','Bob')    -> {users:[undefined, {name:'Bob'}]}
      *   Object.set({}, 'users[0..1].name','Bob') -> {users:[{name:'Bob'},{name:'Bob'}]}
      *
+     * @param {string} key
+     * @param {Property} val
+     *
      ***/
     'set': function(obj, key, val) {
       return deepSetProperty(obj, key, val);
     },
 
     /***
-     * @method size(<obj>)
+     * @method size()
      * @returns Number
-     * @short Returns the number of properties in <obj>.
+     * @short Returns the number of properties in the object.
      *
      * @example
      *
@@ -2651,9 +2731,9 @@
     },
 
     /***
-     * @method isEmpty(<obj>)
+     * @method isEmpty()
      * @returns Boolean
-     * @short Returns true if the number of properties in <obj> is zero.
+     * @short Returns true if the number of properties in the object is zero.
      *
      * @example
      *
@@ -2666,7 +2746,7 @@
     },
 
     /***
-     * @method toQueryString(<obj>, [options])
+     * @method toQueryString([options])
      * @returns Object
      * @short Converts the object into a query string.
      * @extra Accepts deep objects and arrays. [options] can be passed for more
@@ -2687,7 +2767,7 @@
      *   separator   A string that is used to separate keys, either for deep
      *               objects, or when `prefix` is passed.(Default `_`).
      *
-     * @callback transform
+     * @callback queryStringTransformFn
      *
      *   key  The key of the current iteration.
      *   val  The value of the current iteration.
@@ -2699,16 +2779,27 @@
      *   Object.toQueryString({foo:['a','b']})              -> 'foo=a&foo=b'
      *   Object.toQueryString({foo:['a','b']}, {deep:true}) -> 'foo[]=a&foo[]=b'
      *
+     * @param {Object} obj
+     * @param {QueryStringOptions} [options]
+     * @callbackParam {string} key
+     * @callbackParam {Property} val
+     * @callbackParam {Object} obj
+     * @callbackReturns {NewProperty} queryStringTransformFn
+     * @option {boolean} [deep]
+     * @option {string} [prefix]
+     * @option {string} [separator]
+     * @option {queryStringTransformFn} [transform]
+     *
      ***/
     'toQueryString': function(obj, options) {
       return toQueryStringWithOptions(obj, options);
     },
 
     /***
-     * @method isEqual(<a>, <b>)
+     * @method isEqual(obj)
      * @returns Boolean
-     * @short Returns true if <a> and <b> are equivalent.
-     * @extra If <a> and <b> are both built-in types, they will be considered
+     * @short Returns true if `obj` is equivalent to the object.
+     * @extra If both objects are built-in types, they will be considered
      *        equivalent if they are not "observably distinguishable". This means
      *        that primitives and object types, `0` and `-0`, and sparse and
      *        dense arrays are all not equal. Functions and non-built-ins like
@@ -2727,16 +2818,18 @@
      *   Object.isEqual(Object(5), Object(5)) -> true
      *   Object.isEqual(NaN, NaN)             -> false
      *
+     * @param {Object} obj
+     *
      ***/
-    'isEqual': function(a, b) {
-      return isEqual(a, b);
+    'isEqual': function(obj1, obj2) {
+      return isEqual(obj1, obj2);
     },
 
     /***
-     * @method merge(<target>, <source>, [options])
-     * @returns Merged object
-     * @short Merges properties from <source> into <target>.
-     * @extra This method will modify <target>! Use `add` for a non-destructive
+     * @method merge(source, [options])
+     * @returns Object
+     * @short Merges properties from `source` into the object.
+     * @extra This method will modify the object! Use `add` for a non-destructive
      *        alias.
      *
      * @options
@@ -2753,19 +2846,19 @@
      *                (Default `false`)
      *
      *   resolve      Determines which property wins in the case of conflicts.
-     *                If `true`, <source> wins. If `false`, <target> wins. If a
-     *                function is passed, its return value will decide the result.
+     *                If `true`, `source` wins. If `false`, the original property wins.
+     *                If a function is passed, its return value will decide the result.
      *                Any non-undefined return value will resolve the conflict
      *                for that property (will not continue if `deep`). Returning
      *                `undefined` will do nothing (no merge). Finally, returning
      *                the global object `Sugar` will allow Sugar to handle the
      *                merge as normal. (Default `true`)
      *
-     * @callback resolve
+     * @callback resolveFn
      *
      *   key        The key of the current iteration.
-     *   targetVal  The current value for the key in <target>.
-     *   sourceVal  The current value for the key in <source>.
+     *   targetVal  The current value for the key in the target.
+     *   sourceVal  The current value for the key in `source`.
      *   target     The target object.
      *   source     The source object.
      *
@@ -2776,33 +2869,29 @@
      *   Object.merge({x:{a:1}},{x:{b:2}},{deep:true}) -> {x:{a:1,b:2}}
      *   Object.merge({a:1},{a:2},{resolve:mergeAdd})  -> {a:3}
      *
+     * @param {Object} source
+     * @param {ObjectMergeOptions} [options]
+     * @callbackParam {string} key
+     * @callbackParam {Property} targetVal
+     * @callbackParam {Property} sourceVal
+     * @callbackParam {Object} target
+     * @callbackParam {Object} source
+     * @callbackReturns {boolean} resolveFn
+     * @option {boolean} [deep]
+     * @option {boolean} [hidden]
+     * @option {boolean} [descriptor]
+     * @option {boolean|resolveFn} [resolve]
+     *
      ***/
     'merge': function(target, source, opts) {
       return mergeWithOptions(target, source, opts);
     },
 
     /***
-     * @method mergeAll(<target>, <sources>, [options])
-     * @returns Merged object
-     * @short Merges properties from an array of <sources> into <target>.
-     * @extra This method will modify <target>! Use `addAll` for a non-destructive
-     *        alias. See `merge` for options.
-     *
-     * @example
-     *
-     *   Object.mergeAll({one:1},[{two:2},{three:3}]) -> {one:1,two:2,three:3}
-     *   Object.mergeAll({x:{a:1}},[{x:{b:2}},{x:{c:3}}],{deep:true}) -> {x:{a:1,b:2,c:3}}
-     *
-     ***/
-    'mergeAll': function(target, sources, opts) {
-      return mergeAll(target, sources, opts);
-    },
-
-    /***
-     * @method add(<obj1>, <obj2>, [options])
+     * @method add(obj, [options])
      * @returns Object
-     * @short Adds properties in <obj2> to <obj1> and returns a new object.
-     * @extra This method will not modify <obj1>. See `merge` for options.
+     * @short Adds properties in `obj` and returns a new object.
+     * @extra This method will not modify the original object. See `merge` for options.
      *
      * @example
      *
@@ -2811,21 +2900,47 @@
      *   Object.add({x:{a:1}},{x:{b:2}},{deep:true}) -> {x:{a:1,b:2}}
      *   Object.add({a:1},{a:2},{resolve:mergeAdd})  -> {a:3}
      *
+     * @param {Object} obj
+     * @param {ObjectMergeOptions} [options]
+     *
      ***/
     'add': function(obj1, obj2, opts) {
       return mergeWithOptions(clone(obj1), obj2, opts);
     },
 
     /***
-     * @method addAll(<obj>, <sources>, [options])
-     * @returns Merged object
-     * @short Adds properties from an array of <sources> to <obj> and returns a new object.
-     * @extra This method will not modify <obj>. See `merge` for options.
+     * @method mergeAll(sources, [options])
+     * @returns Object
+     * @short Merges properties from an array of `sources`.
+     * @extra This method will modify the object! Use `addAll` for a non-destructive
+     *        alias. See `merge` for options.
+     *
+     * @example
+     *
+     *   Object.mergeAll({one:1},[{two:2},{three:3}]) -> {one:1,two:2,three:3}
+     *   Object.mergeAll({x:{a:1}},[{x:{b:2}},{x:{c:3}}],{deep:true}) -> {x:{a:1,b:2,c:3}}
+     *
+     * @param {Array<Object>} sources
+     * @param {ObjectMergeOptions} [options]
+     *
+     ***/
+    'mergeAll': function(target, sources, opts) {
+      return mergeAll(target, sources, opts);
+    },
+
+    /***
+     * @method addAll(sources, [options])
+     * @returns Object
+     * @short Adds properties from an array of `sources` and returns a new object.
+     * @extra This method will not modify the object. See `merge` for options.
      *
      * @example
      *
      *   Object.addAll({one:1},[{two:2},{three:3}]) -> {one:1,two:2,three:3}
      *   Object.addAll({x:{a:1}},[{x:{b:2}},{x:{c:3}}],{deep:true}) -> {x:{a:1,b:2,c:3}}
+     *
+     * @param {Array<Object>} sources
+     * @param {ObjectMergeOptions} [options]
      *
      ***/
     'addAll': function(obj, sources, opts) {
@@ -2833,10 +2948,30 @@
     },
 
     /***
-     * @method intersect(<obj1>, <obj2>)
+     * @method defaults(sources, [options])
      * @returns Object
-     * @short Returns a new object whose properties are those that both <obj1> and
-     *        <obj2> have in common.
+     * @short Merges properties from one or multiple `sources` while preserving
+     *        the object's defined properties.
+     * @extra This method modifies the object! See `merge` for options.
+     *
+     * @example
+     *
+     *   Object.defaults({one:1},[{one:9},{two:2}])                   -> {one:1,two:2}
+     *   Object.defaults({x:{a:1}},[{x:{a:9}},{x:{b:2}}],{deep:true}) -> {x:{a:1,b:2}}
+     *
+     * @param {Array<Object>} sources
+     * @param {ObjectMergeOptions} [options]
+     *
+     ***/
+    'defaults': function(target, sources, opts) {
+      return defaults(target, sources, opts);
+    },
+
+    /***
+     * @method intersect(obj)
+     * @returns Object
+     * @short Returns a new object whose properties are those that the object has
+     *        in common both with `obj`.
      * @extra If both key and value do not match, then the property will not be included.
      *
      * @example
@@ -2845,15 +2980,17 @@
      *   Object.intersect({a:'a'},{a:'b'}) -> {}
      *   Object.intersect({a:'a',b:'b'},{b:'b',z:'z'}) -> {b:'b'}
      *
+     * @param {Object} obj
+     *
      ***/
     'intersect': function(obj1, obj2) {
       return objectIntersectOrSubtract(obj1, obj2, false);
     },
 
     /***
-     * @method subtract(<obj1>, <obj2>)
+     * @method subtract(obj)
      * @returns Object
-     * @short Returns a clone of <obj1> with any properties shared by <obj2> excluded.
+     * @short Returns a clone of the object with any properties shared with `obj` excluded.
      * @extra If both key and value do not match, then the property will not be excluded.
      *
      * @example
@@ -2861,32 +2998,17 @@
      *   Object.subtract({a:'a',b:'b'},{b:'b'}) -> {a:'a'}
      *   Object.subtract({a:'a',b:'b'},{a:'b'}) -> {a:'a',b:'b'}
      *
+     * @param {Object} obj
+     *
      ***/
     'subtract': function(obj1, obj2) {
       return objectIntersectOrSubtract(obj1, obj2, true);
     },
 
     /***
-     * @method defaults(<target>, <sources>, [options])
-     * @returns Merged object
-     * @short Merges properties from one or multiple <sources> into <target> while
-     *        preserving <target>'s properties.
-     * @extra This method modifies <target>! See `merge` for options.
-     *
-     * @example
-     *
-     *   Object.defaults({one:1},[{one:9},{two:2}])                   -> {one:1,two:2}
-     *   Object.defaults({x:{a:1}},[{x:{a:9}},{x:{b:2}}],{deep:true}) -> {x:{a:1,b:2}}
-     *
-     ***/
-    'defaults': function(target, sources, opts) {
-      return defaults(target, sources, opts);
-    },
-
-    /***
-     * @method clone(<obj>, [deep] = false)
-     * @returns Cloned object
-     * @short Creates a clone of <obj>.
+     * @method clone([deep] = false)
+     * @returns Object
+     * @short Creates a clone of the object.
      * @extra Default is a shallow clone, unless [deep] is true.
      *
      * @example
@@ -2894,15 +3016,17 @@
      *   Object.clone({foo:'bar'})       -> creates shallow clone
      *   Object.clone({foo:'bar'}, true) -> creates a deep clone
      *
+     * @param {boolean} [deep]
+     *
      ***/
     'clone': function(obj, deep) {
       return clone(obj, deep);
     },
 
     /***
-     * @method values(<obj>)
+     * @method values()
      * @returns Array
-     * @short Returns an array containing the values in <obj>.
+     * @short Returns an array containing the values in the object.
      * @extra Values are in no particular order. Does not include inherited or
      *        non-enumerable properties.
      *
@@ -2916,9 +3040,9 @@
     },
 
     /***
-     * @method invert(<obj>, [multi] = false)
+     * @method invert([multi] = false)
      * @returns Object
-     * @short Creates a new object with the keys and values of <obj> swapped.
+     * @short Creates a new object with the keys and values swapped.
      * @extra If [multi] is true, values will be an array of all keys, othewise
      *        collisions will be overwritten.
      *
@@ -2926,6 +3050,8 @@
      *
      *   Object.invert({foo:'bar'})     -> {bar:'foo'}
      *   Object.invert({a:1,b:1}, true) -> {1:['a','b']}
+     *
+     * @param {boolean} [multi]
      *
      ***/
     'invert': function(obj, multi) {
@@ -2944,22 +3070,26 @@
     },
 
     /***
-     * @method tap(<obj>, <fn>)
+     * @method tap(fn)
      * @returns Object
-     * @short Runs <fn> and returns <obj>.
+     * @short Runs `fn` and returns the object.
      * @extra A string can also be used as a shortcut to a method. This method is
      *        designed to run an intermediary function that "taps into" a method
      *        chain. As such, it is fairly useless as a static method. However it
      *        can be quite useful when combined with chainables.
      *
-     * @callback
+     * @callback tapFn
      *
-     *   obj  A reference to <obj>.
+     *   obj  A reference to the object.
      *
      * @example
      *
      *   Sugar.Array([1,4,9]).map(Math.sqrt).tap('pop') -> [1,2]
      *   Sugar.Object({a:'a'}).tap(logArgs).merge({b:'b'})  -> {a:'a',b:'b'}
+     *
+     * @param {tapFn} fn
+     * @callbackParam {Object} obj
+     * @callbackReturns {any} tapFn
      *
      ***/
     'tap': function(obj, arg) {
@@ -2967,9 +3097,9 @@
     },
 
     /***
-     * @method isArguments(<obj>)
+     * @method isArguments()
      * @returns Boolean
-     * @short Returns true if <obj> is an arguments object.
+     * @short Returns true if the object is an arguments object.
      *
      * @example
      *
@@ -2981,9 +3111,9 @@
     },
 
     /***
-     * @method isObject(<obj>)
+     * @method isObject()
      * @returns Boolean
-     * @short Returns true if <obj> is a "plain" object.
+     * @short Returns true if the object is a "plain" object.
      * @extra Plain objects do not include instances of classes or "host" objects,
      *        such as Elements, Events, etc.
      *
@@ -2997,12 +3127,12 @@
     },
 
     /***
-     * @method remove(<obj>, <search>)
+     * @method remove(search)
      * @returns Object
-     * @short Deletes all properties in <obj> matching <search>.
-     * @extra This method will modify <obj>!. Implements `enhanced matching`.
+     * @short Deletes all properties in the object matching `search`.
+     * @extra This method will modify the object!. Implements `enhanced matching`.
      *
-     * @callback search
+     * @callback searchFn
      *
      *   key  The key of the current iteration.
      *   val  The value of the current iteration.
@@ -3013,19 +3143,25 @@
      *   Object.remove({a:'a',b:'b'}, 'a');           -> {b:'b'}
      *   Object.remove({a:'a',b:'b',z:'z'}, /[a-f]/); -> {z:'z'}
      *
+     * @param {Property|searchFn} search
+     * @callbackParam {Property} val
+     * @callbackParam {string} key
+     * @callbackParam {Object} obj
+     * @callbackReturns {boolean} searchFn
+     *
      ***/
     'remove': function(obj, f) {
       return objectRemove(obj, f);
     },
 
     /***
-     * @method exclude(<obj>, <search>)
+     * @method exclude(search)
      * @returns Object
-     * @short Returns a new object with all properties matching <search> removed.
+     * @short Returns a new object with all properties matching `search` removed.
      * @extra This is a non-destructive version of `remove` and will not modify
-     *        <obj>. Implements `enhanced matching`.
+     *        the object. Implements `enhanced matching`.
      *
-     * @callback search
+     * @callback searchFn
      *
      *   key  The key of the current iteration.
      *   val  The value of the current iteration.
@@ -3036,16 +3172,22 @@
      *   Object.exclude({a:'a',b:'b'}, 'a');           -> {b:'b'}
      *   Object.exclude({a:'a',b:'b',z:'z'}, /[a-f]/); -> {z:'z'}
      *
+     * @param {Property|searchFn} search
+     * @callbackParam {Property} val
+     * @callbackParam {string} key
+     * @callbackParam {Object} obj
+     * @callbackReturns {boolean} searchFn
+     *
      ***/
     'exclude': function(obj, f) {
       return objectExclude(obj, f);
     },
 
     /***
-     * @method select(<obj>, <find>)
+     * @method select(find)
      * @returns Object
-     * @short Builds a new object containing the keys specified in <find>.
-     * @extra When <find> is a string, a single key will be selected. Arrays or
+     * @short Builds a new object containing the keys specified in `find`.
+     * @extra When `find` is a string, a single key will be selected. Arrays or
      *        objects match multiple keys, and a regex will match keys by regex.
      *
      * @example
@@ -3055,16 +3197,18 @@
      *   Object.select({a:1,b:2}, /[a-z]/)       -> {a:1,b:2}
      *   Object.select({a:1,b:2}, {a:'a',b:'b'}) -> {a:1,b:2}
      *
+     * @param {string|RegExp|Array<string>|Object} find
+     *
      ***/
     'select': function(obj, f) {
       return objectSelect(obj, f);
     },
 
     /***
-     * @method reject(<obj>, <find>)
+     * @method reject(find)
      * @returns Object
-     * @short Builds a new object containing all keys except those in <find>.
-     * @extra When <find> is a string, a single key will be rejected. Arrays or
+     * @short Builds a new object containing all keys except those in `find`.
+     * @extra When `find` is a string, a single key will be rejected. Arrays or
      *        objects match multiple keys, and a regex will match keys by regex.
      *
      * @example
@@ -3074,6 +3218,8 @@
      *   Object.reject({a:1,b:2}, {a:'a'})    -> {b:2}
      *   Object.reject({a:1,b:2}, ['a', 'b']) -> {}
      *
+     * @param {string|RegExp|Array<string>|Object} find
+     *
      ***/
     'reject': function(obj, f) {
       return objectReject(obj, f);
@@ -3081,14 +3227,15 @@
 
   });
 
+  // TODO: why is this here?
   defineInstance(sugarObject, {
 
     /***
-     * @method keys(<obj>)
+     * @method keys()
      * @returns Array
      * @polyfill ES5
      * @short Returns an array containing the keys of all of the non-inherited,
-     *        enumerable properties of <obj>.
+     *        enumerable properties of the object.
      *
      * @example
      *

@@ -1,5 +1,5 @@
 /*
- *  Sugar v2.0.3
+ *  Sugar v2.0.4
  *
  *  Freely distributable and licensed under the MIT-style license.
  *  Copyright (c) Andrew Plummer

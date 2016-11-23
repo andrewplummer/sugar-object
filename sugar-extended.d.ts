@@ -1,8 +1,8 @@
-// Extended type definitions for Sugar v2.0.3
+// Extended type definitions for Sugar v2.0.4
 // Project: https://sugarjs.com/
 // Definitions by: Andrew Plummer <plummer.andrew@gmail.com>
 
-// <reference path="sugar.d.ts" />
+/// <reference path="sugar.d.ts" />
 
 interface ObjectConstructor {
   fromQueryString<T, U>(str: string, options?: sugarjs.Object.QueryStringParseOptions): Object;

@@ -1,10 +1,9 @@
-// Type definitions for Sugar v2.0.2
+// Type definitions for Sugar v2.0.3
 // Project: https://sugarjs.com/
 // Definitions by: Andrew Plummer <plummer.andrew@gmail.com>
 
-declare module sugarjs {
+declare namespace sugarjs {
 
-  type DisambiguationFunction = Function;
   type SugarDefaultChainable<RawValue> = Array.Chainable<any, RawValue> &
                                          Date.Chainable<RawValue> &
                                          Function.Chainable<RawValue> &
@@ -12,6 +11,7 @@ declare module sugarjs {
                                          Object.Chainable<RawValue> &
                                          RegExp.Chainable<RawValue> &
                                          String.Chainable<RawValue>;
+
   type NativeConstructor = ArrayConstructor |
                            DateConstructor |
                            FunctionConstructor |
@@ -65,7 +65,7 @@ declare module sugarjs {
     extend(opts?: ExtendOptions): this;
   }
 
-  module Array {
+  namespace Array {
 
     type Chainable<T, RawValue> = ChainableBase<T, RawValue> & Object.ChainableBase<RawValue>;
 
@@ -105,7 +105,7 @@ declare module sugarjs {
 
   }
 
-  module Date {
+  namespace Date {
 
     type Chainable<RawValue> = ChainableBase<RawValue> & Object.ChainableBase<RawValue>;
 
@@ -161,7 +161,7 @@ declare module sugarjs {
 
   }
 
-  module Function {
+  namespace Function {
 
     type Chainable<RawValue> = ChainableBase<RawValue> & Object.ChainableBase<RawValue>;
 
@@ -176,7 +176,7 @@ declare module sugarjs {
 
   }
 
-  module Number {
+  namespace Number {
 
     type Chainable<RawValue> = ChainableBase<RawValue> & Object.ChainableBase<RawValue>;
 
@@ -192,7 +192,7 @@ declare module sugarjs {
 
   }
 
-  module Object {
+  namespace Object {
 
     type Chainable<RawValue> = ChainableBase<RawValue>;
     type resolveFn = <T>(key: string, targetVal: T, sourceVal: T, target: Object, source: Object) => boolean;
@@ -212,19 +212,19 @@ declare module sugarjs {
       intersect(instance: Object, obj: Object): Object;
       invert(instance: Object, multi?: boolean): Object;
       isArguments(instance: Object): boolean;
-      isArray(instance: Object): boolean;
-      isBoolean(instance: Object): boolean;
-      isDate(instance: Object): boolean;
+      isArray<T>(instance: Object): instance is Array<T>;
+      isBoolean(instance: Object): instance is boolean;
+      isDate(instance: Object): instance is Date;
       isEmpty(instance: Object): boolean;
       isEqual(instance: Object, obj: Object): boolean;
-      isError(instance: Object): boolean;
-      isFunction(instance: Object): boolean;
-      isMap(instance: Object): boolean;
-      isNumber(instance: Object): boolean;
+      isError(instance: Object): instance is Error;
+      isFunction(instance: Object): instance is Function;
+      isMap<K, V>(instance: Object): instance is Map<K,V>;
+      isNumber(instance: Object): instance is number;
       isObject(instance: Object): boolean;
-      isRegExp(instance: Object): boolean;
-      isSet(instance: Object): boolean;
-      isString(instance: Object): boolean;
+      isRegExp(instance: Object): instance is RegExp;
+      isSet<T>(instance: Object): instance is Set<T>;
+      isString(instance: Object): instance is string;
       keys<T>(instance: Object): T[];
       merge(instance: Object, source: Object, options?: ObjectMergeOptions): Object;
       mergeAll(instance: Object, sources: Array<Object>, options?: ObjectMergeOptions): Object;
@@ -303,7 +303,7 @@ declare module sugarjs {
 
   }
 
-  module RegExp {
+  namespace RegExp {
 
     type Chainable<RawValue> = ChainableBase<RawValue> & Object.ChainableBase<RawValue>;
 
@@ -317,7 +317,7 @@ declare module sugarjs {
 
   }
 
-  module String {
+  namespace String {
 
     type Chainable<RawValue> = ChainableBase<RawValue> & Object.ChainableBase<RawValue>;
 
@@ -375,6 +375,11 @@ declare module sugarjs {
 
   }
 
+}
+
+declare module "sugar" {
+  const Sugar: sugarjs.Sugar;
+  export = Sugar;
 }
 
 declare var Sugar: sugarjs.Sugar;

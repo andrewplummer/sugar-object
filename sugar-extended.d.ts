@@ -1,6 +1,8 @@
-// Extended type definitions for Sugar v2.0.2
+// Extended type definitions for Sugar v2.0.3
 // Project: https://sugarjs.com/
 // Definitions by: Andrew Plummer <plummer.andrew@gmail.com>
+
+// <reference path="sugar.d.ts" />
 
 interface ObjectConstructor {
   fromQueryString<T, U>(str: string, options?: sugarjs.Object.QueryStringParseOptions): Object;
@@ -14,19 +16,19 @@ interface ObjectConstructor {
   intersect(instance: Object, obj: Object): Object;
   invert(instance: Object, multi?: boolean): Object;
   isArguments(instance: Object): boolean;
-  isArray(instance: Object): boolean;
-  isBoolean(instance: Object): boolean;
-  isDate(instance: Object): boolean;
+  isArray<T>(instance: Object): instance is Array<T>;
+  isBoolean(instance: Object): instance is boolean;
+  isDate(instance: Object): instance is Date;
   isEmpty(instance: Object): boolean;
   isEqual(instance: Object, obj: Object): boolean;
-  isError(instance: Object): boolean;
-  isFunction(instance: Object): boolean;
-  isMap(instance: Object): boolean;
-  isNumber(instance: Object): boolean;
+  isError(instance: Object): instance is Error;
+  isFunction(instance: Object): instance is Function;
+  isMap<K, V>(instance: Object): instance is Map<K,V>;
+  isNumber(instance: Object): instance is number;
   isObject(instance: Object): boolean;
-  isRegExp(instance: Object): boolean;
-  isSet(instance: Object): boolean;
-  isString(instance: Object): boolean;
+  isRegExp(instance: Object): instance is RegExp;
+  isSet<T>(instance: Object): instance is Set<T>;
+  isString(instance: Object): instance is string;
   keys<T>(instance: Object): T[];
   merge<T>(instance: Object, source: Object, options?: sugarjs.Object.ObjectMergeOptions): Object;
   mergeAll(instance: Object, sources: Array<Object>, options?: sugarjs.Object.ObjectMergeOptions): Object;
